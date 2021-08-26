@@ -16,13 +16,16 @@ TAG_CHOICES = [
     ('AMELIORATION', 'AMELIORATION'),
     ('TACHE', 'TACHE'),
 ]
-
+ROLE = {
+    ('AUTHOR', 'AUTHOR'),
+    ('CONTRIBUTOR', 'CONTRIBUTOR'),
+}
 
 class Project(models.Model):
     title = models.CharField(max_length=128)
     description = models.TextField(max_length=2048)
     type = models.CharField(max_length=128)
-    author_user_id = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author = models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='author', on_delete=models.CASCADE)
 
 
 class Contributor(models.Model):
@@ -39,13 +42,13 @@ class Issue(models.Model):
     priority = models.CharField(choices=PRIORITY_CHOICES, default='MOYENNE', max_length=100)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
     status = models.CharField(choices=STATS_CHOICES, default='A FAIRE', max_length=100)
-    author_user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    assignee_user = models.ForeignKey(Contributor ,on_delete=models.CASCADE)
+    author = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    assignee = models.ForeignKey(Contributor, on_delete=models.CASCADE)
     created_time = models.DateTimeField(auto_now_add=True)
 
 
 class Comment(models.Model):
     description = models.CharField(max_length=2048)
-    author_user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
     created_time = models.DateTimeField(auto_now_add=True)

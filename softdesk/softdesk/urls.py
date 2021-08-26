@@ -1,3 +1,4 @@
+from app_auth.views import SignupView, MyObtainTokenPairView
 from django.contrib import admin
 from django.urls import path, include
 
@@ -16,6 +17,8 @@ issues_router.register('comments', CommentViewSet, basename='projects-issues-com
 """
 
 urlpatterns = [
+    path('api/signup', SignupView.as_view(), name='signup'),
+    path('api/login', MyObtainTokenPairView.as_view(), name='login'),
     path('api/', include(router.urls)),
     path('api/', include(projects_router.urls)),
     #path('api/', include(issues_router.urls)),

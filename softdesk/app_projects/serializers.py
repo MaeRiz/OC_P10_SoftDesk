@@ -6,8 +6,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
-        fields = ['title', 'description', 'type', 'author_user_id']
-        read_only_fields = ['author_user_id']
+        fields = '__all__'
 
 
 
