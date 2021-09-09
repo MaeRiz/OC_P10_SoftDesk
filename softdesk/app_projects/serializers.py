@@ -18,7 +18,7 @@ class IssueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Issue
-        exclude = ['project']
+        fields = '__all__'
 
 
 class CommentSerializer(serializers.ModelSerializer):

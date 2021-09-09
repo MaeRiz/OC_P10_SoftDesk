@@ -2,19 +2,19 @@ from django.db import models
 from django.conf import settings
 
 PRIORITY_CHOICES = [
-    ('FAIBLE', 'FAIBLE'),
-    ('MOYENNE', 'MOYENNE'),
-    ('ELEVEE', 'ELEVEE'),
+    ('LOW', 'LOW'),
+    ('MEDIUM', 'MEDIUM'),
+    ('HIGH', 'HIGH'),
 ]
 STATS_CHOICES = [
-    ('A FAIRE', 'A FAIRE'),
-    ('EN COURS', 'EN COURS'),
-    ('TERMINE', 'TERMINE'),
+    ('TODO', 'TODO'),
+    ('IN PROGRESS', 'IN PROGRESS'),
+    ('COMPLETE', 'COMPLETE'),
 ]
 TAG_CHOICES = [
     ('BUG', 'BUG'),
-    ('AMELIORATION', 'AMELIORATION'),
-    ('TACHE', 'TACHE'),
+    ('UPGRADE', 'UPGRADE'),
+    ('TASK', 'TASK'),
 ]
 ROLE = {
     ('AUTHOR', 'AUTHOR'),
@@ -38,9 +38,9 @@ class Issue(models.Model):
     title = models.CharField(max_length=128)
     desc = models.TextField(max_length=2048)
     tag = models.CharField(choices=TAG_CHOICES, max_length=100)
-    priority = models.CharField(choices=PRIORITY_CHOICES, default='MOYENNE', max_length=100)
+    priority = models.CharField(choices=PRIORITY_CHOICES, default='LOW', max_length=100)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    status = models.CharField(choices=STATS_CHOICES, default='A FAIRE', max_length=100)
+    status = models.CharField(choices=STATS_CHOICES, default='TODO', max_length=100)
     author = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     assignee = models.ForeignKey(Contributor, on_delete=models.CASCADE)
     created_time = models.DateTimeField(auto_now_add=True)

@@ -1,3 +1,4 @@
+from django.db.models.deletion import RestrictedError
 from rest_framework import viewsets, status
 from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
@@ -55,7 +56,7 @@ class ContributorsViewset(viewsets.ModelViewSet):
 
         if int(data['user']) in contributors_lst:
             return Response('User already added.', status=status.HTTP_400_BAD_REQUEST)
-            
+
         else:
             data['project'] = project_pk
             data['role'] = 'CONTRIBUTOR'
@@ -73,13 +74,16 @@ class IssueViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return Issue.objects.filter(project=self.kwargs['project_pk'])
 
-    def create(self, request):
+    def create(self, request, project_pk=None):
 
         data = request.data.copy()
-        data['author'] = request.user.id
-        serialized_data = ProjectSerializer(data=data)
+        data['author'] = request.user.pk
+        data['project'] = project_pk
+        serialized_data = IssueSerializer(data=data)
         serialized_data.is_valid(raise_exception=True)
-        issue = serialized_data.save()
+        serialized_data.save()
+
+        return Response(serialized_data.data, status=status.HTTP_201_CREATED)
 
 class CommentViewSet(viewsets.ModelViewSet):
 
