@@ -1,7 +1,8 @@
-from app_auth.views import SignupView, MyObtainTokenPairView
+from app_auth.views import SignupView
 from django.contrib import admin
 from django.urls import path, include
 
+from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_nested import routers
 from app_projects.views import ProjectViewSet, IssueViewSet, CommentViewSet
  
@@ -17,8 +18,9 @@ issues_router.register('comments', CommentViewSet, basename='projects-issues-com
 """
 
 urlpatterns = [
-    path('api/signup', SignupView.as_view(), name='signup'),
-    path('api/login', MyObtainTokenPairView.as_view(), name='login'),
+    path('api/signup/', SignupView.as_view(), name='signup'),
+    path('api/login/', TokenObtainPairView.as_view(), name='login'),
+
     path('api/', include(router.urls)),
     path('api/', include(projects_router.urls)),
     #path('api/', include(issues_router.urls)),

@@ -11,7 +11,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
 
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    #permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        projects_ids_lst = []
+        for object in Contributor.objects.filter(user_id=self.request.user):
+            projects_ids_lst.append(object.project_id)
+        return Project.objects.filter(id__in=projects_ids_lst)
 
     def create(self, request):
 
