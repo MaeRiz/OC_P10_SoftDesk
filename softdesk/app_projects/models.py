@@ -31,8 +31,7 @@ class Project(models.Model):
 class Contributor(models.Model):
     user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    permission = models.CharField(max_length=128)
-    role = models.CharField(max_length=128)
+    role = models.CharField(choices=ROLE, default='CONTRIBUTOR', max_length=128)
 
 
 class Issue(models.Model):
