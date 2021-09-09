@@ -91,3 +91,12 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return Comment.objects.filter(issue=self.kwargs['issue_pk'])
+
+    def create(self, request, project_pk=None, issue_pk=None):
+        data = request.data.copy()
+        data['author'] = request.user.pk
+        data['issue'] = issue_pk
+        serialized_data = CommentSerializer(data=data)
+        serialized_data.is_valid(raise_exception=True)
+        serialized_data.save()
+        return Response(serialized_data.data, status=status.HTTP_201_CREATED)

@@ -13,10 +13,9 @@ projects_router = routers.NestedSimpleRouter(router, 'projects', lookup='project
 projects_router.register('issues', IssueViewSet, basename='projects-issues')
 projects_router.register('users', ContributorsViewset, basename='projects-users')
 
-"""
-issues_router = routers.NestedSimpleRouter(router, 'issues', lookup='issue')
-issues_router.register('comments', CommentViewSet, basename='projects-issues-comments')
-"""
+issues_router = routers.NestedSimpleRouter(projects_router, 'issues', lookup='issue')
+issues_router.register('comments', CommentViewSet, basename='issues-comments')
+
 
 urlpatterns = [
     path('api/signup/', SignupView.as_view(), name='signup'),
@@ -24,7 +23,7 @@ urlpatterns = [
 
     path('api/', include(router.urls)),
     path('api/', include(projects_router.urls)),
-    #path('api/', include(issues_router.urls)),
+    path('api/', include(issues_router.urls)),
     path('admin/', admin.site.urls),
  
 ]
