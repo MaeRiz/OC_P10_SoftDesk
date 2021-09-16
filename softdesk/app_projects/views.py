@@ -1,24 +1,20 @@
-from django.db.models.deletion import RestrictedError
 from rest_framework import viewsets, status
-from rest_framework import permissions
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Comment, Contributor, Issue, Project
 from .serializers import CommentSerializer, IssueSerializer, ProjectSerializer, ContributorsSerializer
+from .permissions import ContributorPermissions, ProjectPermissions
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
 
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, ProjectPermissions)
 
     def get_queryset(self):
-        projects_ids_lst = []
-        for object in Contributor.objects.filter(user_id=self.request.user):
-            projects_ids_lst.append(object.project_id)
-        return Project.objects.filter(id__in=projects_ids_lst)
+        return Project.objects.filter(contributors__user=self.request.user)
 
     def create(self, request):
 
@@ -31,7 +27,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
         contributor = Contributor.objects.create(
             user= request.user,
             project= project,
-            permission= '',
             role= 'AUTHOR',
         )
         contributor.save()
@@ -42,6 +37,7 @@ class ProjectViewSet(viewsets.ModelViewSet):
 class ContributorsViewset(viewsets.ModelViewSet):
 
     serializer_class = ContributorsSerializer
+    permission_classes = (IsAuthenticated, ContributorPermissions)
 
     def get_queryset(self):
         return Contributor.objects.filter(project_id=self.kwargs['project_pk'])
@@ -70,6 +66,8 @@ class ContributorsViewset(viewsets.ModelViewSet):
 class IssueViewSet(viewsets.ModelViewSet):
 
     serializer_class = IssueSerializer
+    permission_classes = (IsAuthenticated,)
+
 
     def get_queryset(self):
         return Issue.objects.filter(project=self.kwargs['project_pk'])
@@ -88,6 +86,7 @@ class IssueViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
 
     serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         return Comment.objects.filter(issue=self.kwargs['issue_pk'])
