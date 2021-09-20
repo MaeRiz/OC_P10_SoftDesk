@@ -1,6 +1,12 @@
 from django.db import models
 from django.conf import settings
 
+TYPE_CHOICES = [
+    ('BACKEND', 'BACKEND'),
+    ('FRONTEND', 'FRONTEND'),
+    ('IOS', 'IOS'),
+    ('ANDROID', 'ANDROID')
+]
 PRIORITY_CHOICES = [
     ('LOW', 'LOW'),
     ('MEDIUM', 'MEDIUM'),
@@ -16,15 +22,16 @@ TAG_CHOICES = [
     ('UPGRADE', 'UPGRADE'),
     ('TASK', 'TASK'),
 ]
-ROLE = {
+ROLE = [
     ('AUTHOR', 'AUTHOR'),
     ('CONTRIBUTOR', 'CONTRIBUTOR'),
-}
+]
+
 
 class Project(models.Model):
     title = models.CharField(max_length=128)
     description = models.TextField(max_length=2048)
-    type = models.CharField(max_length=128)
+    type = models.CharField(choices=TYPE_CHOICES, max_length=128)
     author = models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='author', on_delete=models.CASCADE)
 
 

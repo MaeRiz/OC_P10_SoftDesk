@@ -17,26 +17,20 @@ class ContributorPermissions(permissions.BasePermission):
 
     def has_permission(self, request, view):
         project = Project.objects.get(id=view.kwargs['project_pk'])
-        usr_projects = Project.objects.filter(contributors__user=request.user)
-        if project in usr_projects:
-            if request.method in permissions.SAFE_METHODS:
-                return True
-            return request.user == project.author
-        return False
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return request.user == project.author
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
         return request.user == obj.author
 
+
 class IssuePermissions(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        project = Project.objects.get(id=view.kwargs['project_pk'])
-        usr_projects = Project.objects.filter(contributors__user=request.user)
-        if project in usr_projects:
-            return True
-        return False
+        return True
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
@@ -47,11 +41,7 @@ class IssuePermissions(permissions.BasePermission):
 class CommentPermissions(permissions.BasePermission):
 
     def has_permission(self, request, view):
-        project = Project.objects.get(id=view.kwargs['project_pk'])
-        usr_projects = Project.objects.filter(contributors__user=request.user)
-        if project in usr_projects:
-            return True
-        return False
+        return True
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
