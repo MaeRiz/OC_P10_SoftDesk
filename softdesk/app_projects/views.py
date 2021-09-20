@@ -3,8 +3,16 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Comment, Contributor, Issue, Project
-from .serializers import CommentSerializer, IssueSerializer, ProjectSerializer, ContributorsSerializer
-from .permissions import ContributorPermissions, ProjectPermissions
+from .serializers import (
+    CommentSerializer,
+    IssueSerializer,
+    ProjectSerializer,
+    ContributorsSerializer)
+from .permissions import (
+    CommentPermissions,
+    ContributorPermissions,
+    IssuePermissions,
+    ProjectPermissions)
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -25,9 +33,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
         project = serialized_data.save()
 
         contributor = Contributor.objects.create(
-            user= request.user,
-            project= project,
-            role= 'AUTHOR',
+            user=request.user,
+            project=project,
+            role='AUTHOR',
         )
         contributor.save()
 
@@ -40,7 +48,8 @@ class ContributorsViewset(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, ContributorPermissions)
 
     def get_queryset(self):
-        return Contributor.objects.filter(project_id=self.kwargs['project_pk'])
+        return Contributor.objects.filter(
+            project_id=self.kwargs['project_pk'])
 
     def create(self, request, project_pk=None):
 
@@ -51,7 +60,8 @@ class ContributorsViewset(viewsets.ModelViewSet):
             contributors_lst.append(object.user_id)
 
         if int(data['user']) in contributors_lst:
-            return Response('User already added.', status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                'User already added.', status=status.HTTP_400_BAD_REQUEST)
 
         else:
             data['project'] = project_pk
@@ -60,33 +70,37 @@ class ContributorsViewset(viewsets.ModelViewSet):
             serialized_data.is_valid(raise_exception=True)
             serialized_data.save()
 
-            return Response(serialized_data.data, status=status.HTTP_201_CREATED)
+            return Response(
+                serialized_data.data, status=status.HTTP_201_CREATED)
 
 
 class IssueViewSet(viewsets.ModelViewSet):
 
     serializer_class = IssueSerializer
-    permission_classes = (IsAuthenticated,)
-
+    permission_classes = (IsAuthenticated, IssuePermissions)
 
     def get_queryset(self):
         return Issue.objects.filter(project=self.kwargs['project_pk'])
 
     def create(self, request, project_pk=None):
-
         data = request.data.copy()
         data['author'] = request.user.pk
         data['project'] = project_pk
+
+        if 'assignee' not in data:
+            data['assignee'] = request.user.pk
+
         serialized_data = IssueSerializer(data=data)
         serialized_data.is_valid(raise_exception=True)
         serialized_data.save()
 
         return Response(serialized_data.data, status=status.HTTP_201_CREATED)
 
+
 class CommentViewSet(viewsets.ModelViewSet):
 
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, CommentPermissions)
 
     def get_queryset(self):
         return Comment.objects.filter(issue=self.kwargs['issue_pk'])
@@ -98,4 +112,5 @@ class CommentViewSet(viewsets.ModelViewSet):
         serialized_data = CommentSerializer(data=data)
         serialized_data.is_valid(raise_exception=True)
         serialized_data.save()
+
         return Response(serialized_data.data, status=status.HTTP_201_CREATED)
