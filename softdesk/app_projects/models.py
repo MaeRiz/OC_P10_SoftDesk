@@ -15,7 +15,7 @@ PRIORITY_CHOICES = [
 STATS_CHOICES = [
     ('TODO', 'TODO'),
     ('IN PROGRESS', 'IN PROGRESS'),
-    ('COMPLETE', 'COMPLETE'),
+    ('DONE', 'DONE'),
 ]
 TAG_CHOICES = [
     ('BUG', 'BUG'),
